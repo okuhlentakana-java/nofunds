@@ -2,7 +2,7 @@ import { RiWifiOffLine } from "react-icons/ri";
 
 export default function Banner() {
   return (
-    <div className="relative mx-6 mt-6 p-5 rounded-2xl bg-gradient-to-r from-blue-900 to-blue-500 text-white overflow-hidden">
+    <div className="relative mx-4 mt-3 p-3 rounded-2xl bg-gradient-to-r from-blue-900 to-blue-500 text-white overflow-hidden">
       {/* Wave pattern background */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"

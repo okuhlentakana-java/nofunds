@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
+
 export default function Navbar({ onMenuClick, title = "Home" }) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 bg-white shadow-sm sticky top-0 z-30">
+    <div className="flex items-center justify-between px-4 py-2 bg-white shadow-sm sticky top-0 z-30">
 
       {/* Left Side: Menu + Title */}
       <div className="flex items-center gap-3">
@@ -17,13 +19,13 @@ export default function Navbar({ onMenuClick, title = "Home" }) {
       </div>
 
       {/* Right Side: Logo */}
-      <div>
+      <Link to="/">
         <img
           src="/etl-logo.png"
           alt="Econet Lesotho Logo"
-          className="h-10 w-auto object-contain transition-transform duration-200 hover:scale-105"
+          className="h-10 w-auto object-contain transition-transform duration-200 hover:scale-105 cursor-pointer"
         />
-      </div>
+      </Link>
 
     </div>
   );

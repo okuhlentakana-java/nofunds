@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
-import { SiVisa, SiMastercard } from "react-icons/si";
+import { CiCreditCard1 } from "react-icons/ci";
 
 const paymentMethods = [
   {
@@ -15,29 +15,11 @@ const paymentMethods = [
     bg: "#16a34a",
   },
   {
-    id: "mpesa",
-    label: "M-Pesa",
-    desc: "Mobile money transfer",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
-    ),
-    bg: "#e53935",
-  },
-  {
-    id: "visa",
-    label: "VISA",
+    id: "card",
+    label: "Card",
     desc: "Debit or credit card",
-    icon: <SiVisa className="w-5 h-5 text-white" />,
+    icon: <CiCreditCard1 className="w-5 h-5 text-white" />,
     bg: "#1a237e",
-  },
-  {
-    id: "mastercard",
-    label: "Mastercard",
-    desc: "Debit or credit card",
-    icon: <SiMastercard className="w-5 h-5 text-white" />,
-    bg: "#f59e0b",
   },
 ];
 
@@ -53,7 +35,7 @@ export default function PaymentModal({ isOpen, onClose, item, onSuccess }) {
 
   const selected = paymentMethods.find(m => m.id === method);
   const isMobile = method === "mpesa" || method === "ecocash";
-  const isCard = method === "visa" || method === "mastercard";
+  const isCard = method === "card" ;
 
   const canSubmit = () => {
     if (isMobile) return phone.replace(/\D/g, "").length >= 8;

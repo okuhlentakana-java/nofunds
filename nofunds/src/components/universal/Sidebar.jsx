@@ -16,7 +16,9 @@ const navLinks = [
       { icon: <CiHome />, label: "Home", to: "/" },
       { icon: <BsPhone />, label: "Recharge Airtime", to: "/recharge" },
       { icon: <CiWifiOn />, label: "Data Bundles", to: "/bundles" },
+      { icon: <BsMegaphone />, label: "Advertise With Us", to: "/ads" },
       { icon: <LuHandCoins />, label: "Airtime Credit", to: "/credit" },
+      { icon: <RiFireLine />, label: "Hot Offers", to: "/offers" },
       { icon: <BsStars />, label: "Services", to: "/services" },
     ]
   },
@@ -26,7 +28,6 @@ const navLinks = [
     links: [
       { icon: <GoLightBulb />, label: "Free Usage Tips", to: "/tips" },
       { icon: <BsExclamationCircle />, label: "Emergency", to: "/emergency" },
-      { icon: <RiFireLine />, label: "Hot Offers", to: "/offers" },
       { icon: <BsExclamationCircle />, label: "About No Funds", to: "/no-funds" },
     ]
   },
@@ -36,9 +37,7 @@ const navLinks = [
     links: [
       { icon: <GoQuestion />, label: "Help & Support", to: "/help" },
       { icon: <FiMessageSquare />, label: "FAQs", to: "/faqs" },
-      { icon: <BsMegaphone />, label: "Advertise With Us", to: "/ads" },
       { icon: <AiOutlineGlobal />, label: "Language", to: "/language" },
-      { icon: <FiShieldOff />, label: "Opt Out of Redirects", to: "/opt-out" },
     ]
   },
   // Legal section

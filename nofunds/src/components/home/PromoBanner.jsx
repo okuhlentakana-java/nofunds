@@ -74,7 +74,7 @@ export default function PromoBanner() {
       {/* Slides Wrapper */}
       <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${current * 100}%)` }}>
         {promos.map((promo, index) => (
-          <div key={index} className="min-w-full px-6">
+          <div key={index} className="min-w-full px-4">
             <div className={`rounded-2xl bg-gradient-to-r ${promo.color} text-white p-5 flex items-center justify-between shadow-md`}>
               <div className="flex-1">
                 <div className="text-xs font-semibold uppercase opacity-80 mb-1">{promo.head}</div>

@@ -74,7 +74,7 @@ export default function SponsoredBanner() {
 
   return (
     <div className="relative">
-      <div className={`mx-6 mt-6 rounded-2xl bg-gradient-to-r ${banner.color} text-white p-5 flex items-center justify-between shadow-md min-h-[180px]`}>
+      <div className={`mx-4 mt-3 rounded-2xl bg-gradient-to-r ${banner.color} text-white p-5 flex items-center justify-between shadow-md min-h-[180px]`}>
         <div className="flex-1">
           <div className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-1">Sponsored</div>
           <h3 className="font-bold text-base leading-snug">{banner.title}</h3>
@@ -85,7 +85,7 @@ export default function SponsoredBanner() {
           </button>
         </div>
       </div>
-      <div className="absolute bottom-0 left-6 right-6 h-1 bg-white/30 rounded-b-2xl overflow-hidden">
+      <div className="absolute bottom-0 left-4 right-4 h-1 bg-white/30 rounded-b-2xl overflow-hidden">
         <div className="h-1 bg-white transition-all duration-100 linear" style={{ width: `${progress}%` }} />
       </div>
     </div>
