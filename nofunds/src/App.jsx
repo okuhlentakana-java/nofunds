@@ -8,7 +8,6 @@ import ServicesPage from "./pages/ServicesPage";
 import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import LanguagePage from "./pages/LanguagePage";
-import OptOutPage from "./pages/OptOutPage";
 import FAQsPage from "./pages/FaqsPage";
 import HelpSupportPage from "./pages/HelpSupportPage";
 import AdvertPage from "./pages/AdvertPage";
@@ -30,7 +29,6 @@ function App() {
            <Route path="/terms" element={<TermsAndConditionsPage />} /> 
            <Route path="/policy" element={<PrivacyPolicyPage />} /> 
            <Route path="/language" element={<LanguagePage />} /> 
-           <Route path="/opt-out" element={<OptOutPage />} /> 
            <Route path="/faqs" element={<FAQsPage />} /> 
            <Route path="/help" element={<HelpSupportPage />} /> 
            <Route path="/ads" element={<AdvertPage />} /> 
