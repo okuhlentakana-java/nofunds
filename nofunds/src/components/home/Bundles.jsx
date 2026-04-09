@@ -4,95 +4,43 @@ import { FaArrowRight } from "react-icons/fa";
 import PaymentModal from "../universal/PaymentModal";
 
 const bundles = [
-  { 
-    id: 1,
-    label: "Best Value", 
-    data: "1GB", 
-    price: "M20.00", 
-    validity: "24 hours",
-    category: "daily",
-    description: "Perfect for daily browsing"
-  },
-  { 
-    id: 2,
-    label: "Recommended", 
-    data: "2GB", 
-    price: "M50.00", 
-    validity: "7 days",
-    category: "weekly",
-    description: "Stream and browse freely"
-  },
-  { 
-    id: 3,
-    label: "Best Value", 
-    data: "7GB", 
-    price: "M260.00", 
-    validity: "30 days",
-    category: "monthly",
-    description: "Heavy usage, video streaming"
-  },
-  { 
-    id: 4,
-    label: "Best Night", 
-    data: "1.5GB", 
-    price: "M10.00", 
-    validity: "11pm–5am",
-    category: "night",
-    description: "Perfect for late night streaming"
-  },
-  { 
-    id: 5,
-    label: "Popular", 
-    data: "3.5+3.5GB", 
-    price: "M30.00", 
-    validity: "7 days", 
-    badge: "SASAI",
-    category: "weekly",
-    description: "Double data bonus"
-  },
-  { 
-    id: 6,
-    label: "Best Voice", 
-    data: "1,900min", 
-    price: "M250.00", 
-    validity: "30 days",
-    category: "voice",
-    description: "Unlimited calling"
-  },
+  { id: 1, label: "Best Value",   data: "1GB",        price: "M20.00",  validity: "24 hours",  category: "daily",   description: "Perfect for daily browsing"        },
+  { id: 2, label: "Recommended",  data: "2GB",        price: "M50.00",  validity: "7 days",    category: "weekly",  description: "Stream and browse freely"          },
+  { id: 3, label: "Best Value",   data: "7GB",        price: "M260.00", validity: "30 days",   category: "monthly", description: "Heavy usage, video streaming"      },
+  { id: 4, label: "Best Night",   data: "1.5GB",      price: "M10.00",  validity: "11pm–5am",  category: "night",   description: "Perfect for late night streaming"  },
+  { id: 5, label: "Popular",      data: "3.5+3.5GB",  price: "M30.00",  validity: "7 days",    category: "weekly",  description: "Double data bonus"                 },
+  { id: 6, label: "Best Voice",   data: "1,900min",   price: "M250.00", validity: "30 days",   category: "voice",   description: "Unlimited calling"                 },
 ];
+
+const labelColor = (label) => {
+  if (label === "Best Value") return "bg-green-500 text-white";
+  return "bg-blue-100 text-blue-700";
+};
 
 export default function Bundles() {
   const navigate = useNavigate();
   const [selectedBundle, setSelectedBundle] = useState(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showModal, setShowModal]           = useState(false);
 
-  const handleSeeAll = () => navigate("/bundles");
-
+  // ── Handlers ──────────────────────────────────────────────────────────────
   const handleBuy = (bundle) => {
     setSelectedBundle(bundle);
-    setShowPaymentModal(true);
+    setShowModal(true);
   };
 
-  const handleClosePayment = () => {
-    setShowPaymentModal(false);
+  const handleClose = () => {
+    setShowModal(false);
     setSelectedBundle(null);
   };
 
-  const getPaymentItem = () => {
-    if (!selectedBundle) return null;
-    return {
-      name: selectedBundle.data,
-      description: selectedBundle.description || `Valid ${selectedBundle.validity}`,
-      price: selectedBundle.price,
-      validity: selectedBundle.validity
-    };
-  };
-
-  const labelColor = (label) => {
-    if (label === "Best Value") return "bg-green-500 text-white";
-    if (label === "Recommended") return "bg-blue-100 text-blue-700";
-    return "bg-blue-100 text-blue-700";
-  };
+  const paymentItem = selectedBundle
+    ? {
+        name:        selectedBundle.data,
+        description: selectedBundle.description || `Valid ${selectedBundle.validity}`,
+        price:       selectedBundle.price,
+        validity:    selectedBundle.validity,
+      }
+    : null;
 
   return (
     <>
@@ -100,7 +48,7 @@ export default function Bundles() {
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-semibold text-gray-800 text-sm">Recommended</h2>
           <button
-            onClick={handleSeeAll}
+            onClick={() => navigate("/bundles")}
             className="flex items-center gap-1 text-blue-600 text-xs font-medium hover:text-blue-700 transition"
           >
             See All <FaArrowRight size={10} />
@@ -117,7 +65,6 @@ export default function Bundles() {
                   : "bg-white text-gray-800"
               }`}
             >
-              {/* Top: label + data + validity */}
               <div>
                 <span
                   className={`inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full leading-tight ${
@@ -141,7 +88,6 @@ export default function Bundles() {
                 </p>
               </div>
 
-              {/* Bottom: price + buy */}
               <div className="flex items-center justify-between mt-2 gap-1">
                 <span className={`font-bold text-xs leading-tight ${bundle.highlight ? "text-white" : "text-gray-800"}`}>
                   {bundle.price}
@@ -162,12 +108,13 @@ export default function Bundles() {
         </div>
       </div>
 
-      {showPaymentModal && getPaymentItem() && (
+      {/* Normal modal — user pressed Buy */}
+      {showModal && paymentItem && (
         <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={handleClosePayment}
-          item={getPaymentItem()}
-          type="bundle"
+          isOpen={showModal}
+          onClose={handleClose}
+          item={paymentItem}
+          onSuccess={handleClose}
         />
       )}
     </>
