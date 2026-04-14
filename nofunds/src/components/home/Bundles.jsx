@@ -2,45 +2,64 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import PaymentModal from "../universal/PaymentModal";
-
-const bundles = [
-  { id: 1, label: "Best Value",   data: "1GB",        price: "M20.00",  validity: "24 hours",  category: "daily",   description: "Perfect for daily browsing"        },
-  { id: 2, label: "Recommended",  data: "2GB",        price: "M50.00",  validity: "7 days",    category: "weekly",  description: "Stream and browse freely"          },
-  { id: 3, label: "Best Value",   data: "7GB",        price: "M260.00", validity: "30 days",   category: "monthly", description: "Heavy usage, video streaming"      },
-  { id: 4, label: "Best Night",   data: "1.5GB",      price: "M10.00",  validity: "11pm–5am",  category: "night",   description: "Perfect for late night streaming"  },
-  { id: 5, label: "Popular",      data: "3.5+3.5GB",  price: "M30.00",  validity: "7 days",    category: "weekly",  description: "Double data bonus"                 },
-  { id: 6, label: "Best Voice",   data: "1,900min",   price: "M250.00", validity: "30 days",   category: "voice",   description: "Unlimited calling"                 },
-];
+import { useBundles } from "../../hooks/useBundles";
 
 const labelColor = (label) => {
-  if (label === "Best Value") return "bg-green-500 text-white";
-  return "bg-blue-100 text-blue-700";
+  switch (label) {
+    case "Best Value":  return "bg-green-500 text-white";
+    case "Recommended": return "bg-blue-100 text-blue-700";
+    case "Popular":     return "bg-yellow-100 text-yellow-800";
+    case "Night":       return "bg-indigo-100 text-indigo-700";
+    case "Voice":       return "bg-pink-100 text-pink-700";
+    case "Social":      return "bg-purple-100 text-purple-700";
+    default:            return "bg-gray-100 text-gray-700";
+  }
 };
+
+function pickSix(bundles) {
+  const bestValue = bundles.filter(b => b.label === "Best Value");
+  const rest      = bundles.filter(b => b.label !== "Best Value");
+  return [...bestValue, ...rest].slice(0, 6);
+}
 
 export default function Bundles() {
   const navigate = useNavigate();
-  const [selectedBundle, setSelectedBundle] = useState(null);
-  const [showModal, setShowModal]           = useState(false);
+  const { bundles, loading, error } = useBundles();
+  const [selectedBundle, setSelected] = useState(null);
+  const [showModal, setShowModal]     = useState(false);
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-  const handleBuy = (bundle) => {
-    setSelectedBundle(bundle);
-    setShowModal(true);
-  };
+  const preview = pickSix(bundles);
 
-  const handleClose = () => {
-    setShowModal(false);
-    setSelectedBundle(null);
-  };
+  const handleBuy   = (bundle) => { setSelected(bundle); setShowModal(true); };
+  const handleClose = ()       => { setShowModal(false); setSelected(null);  };
 
   const paymentItem = selectedBundle
-    ? {
-        name:        selectedBundle.data,
-        description: selectedBundle.description || `Valid ${selectedBundle.validity}`,
-        price:       selectedBundle.price,
-        validity:    selectedBundle.validity,
-      }
+    ? { name: selectedBundle.name, description: selectedBundle.description,
+        price: selectedBundle.price, validity: selectedBundle.validity }
     : null;
+
+  if (loading) return (
+    <div className="px-4 sm:px-6 mt-3">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="font-semibold text-gray-800 text-sm">Recommended</h2>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-xl p-2 bg-white shadow-sm h-24 animate-pulse">
+            <div className="h-3 bg-gray-100 rounded w-2/3 mb-2" />
+            <div className="h-5 bg-gray-100 rounded w-1/2 mb-2" />
+            <div className="h-3 bg-gray-100 rounded w-1/3" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="px-4 sm:px-6 mt-3 text-center py-6">
+      <p className="text-xs text-red-400">Could not load bundles</p>
+    </div>
+  );
 
   return (
     <>
@@ -56,49 +75,21 @@ export default function Bundles() {
         </div>
 
         <div className="grid grid-cols-3 gap-2">
-          {bundles.map((bundle) => (
+          {preview.map((bundle) => (
             <div
               key={bundle.id}
-              className={`rounded-xl p-2 flex flex-col justify-between shadow-sm min-h-0 ${
-                bundle.highlight
-                  ? "bg-gradient-to-br from-blue-700 to-blue-500 text-white"
-                  : "bg-white text-gray-800"
-              }`}
+              className="rounded-xl p-2 flex flex-col justify-between shadow-sm bg-white text-gray-800 hover:shadow-md transition"
             >
-              <div>
-                <span
-                  className={`inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full leading-tight ${
-                    bundle.highlight ? "bg-white/20 text-white" : labelColor(bundle.label)
-                  }`}
-                >
-                  {bundle.label}
-                </span>
-
-                <div className="mt-1 text-base font-bold leading-tight">
-                  {bundle.data}
-                  {bundle.badge && (
-                    <span className="ml-1 text-[9px] font-semibold bg-yellow-400 text-yellow-900 px-1 py-0.5 rounded-full align-middle">
-                      {bundle.badge}
-                    </span>
-                  )}
-                </div>
-
-                <p className={`text-[10px] leading-tight ${bundle.highlight ? "text-white/70" : "text-gray-400"}`}>
-                  {bundle.validity}
-                </p>
-              </div>
-
+              <span className={`inline-block w-fit text-[9px] font-semibold px-1.5 py-0.5 rounded-full leading-tight ${labelColor(bundle.label)}`}>
+                {bundle.label}
+              </span>
+              <div className="mt-1 text-base font-bold leading-tight">{bundle.name}</div>
+              <p className="text-[10px] text-gray-400 leading-tight">{bundle.validity}</p>
               <div className="flex items-center justify-between mt-2 gap-1">
-                <span className={`font-bold text-xs leading-tight ${bundle.highlight ? "text-white" : "text-gray-800"}`}>
-                  {bundle.price}
-                </span>
+                <span className="font-bold text-xs text-gray-800">{bundle.price}</span>
                 <button
                   onClick={() => handleBuy(bundle)}
-                  className={`text-[10px] font-semibold px-2 py-1 rounded-full transition hover:opacity-90 whitespace-nowrap ${
-                    bundle.highlight
-                      ? "bg-white text-blue-700"
-                      : "bg-blue-900 text-white hover:bg-blue-700"
-                  }`}
+                  className="text-[10px] font-semibold px-2 py-1 rounded-full bg-blue-900 text-white hover:bg-blue-700 transition whitespace-nowrap"
                 >
                   Buy
                 </button>
@@ -108,7 +99,6 @@ export default function Bundles() {
         </div>
       </div>
 
-      {/* Normal modal — user pressed Buy */}
       {showModal && paymentItem && (
         <PaymentModal
           isOpen={showModal}

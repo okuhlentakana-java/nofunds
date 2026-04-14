@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { CiCreditCard1 } from "react-icons/ci";
+import {BACKEND_URL} from "../../api/index";
 
-const BACKEND_URL = "https://uncurbable-brianne-cruelly.ngrok-free.dev";
 
 const LESOTHO = { code: "LS", dial: "+266" };
 const MAX_PHONE_DIGITS = 8;

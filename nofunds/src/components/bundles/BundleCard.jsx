@@ -19,11 +19,9 @@ export default function BundleCard({ bundle }) {
       <div className="rounded-xl p-2 flex flex-col justify-between shadow-sm bg-white text-gray-800 hover:shadow-md transition cursor-pointer">
         {/* Top: label + data + validity */}
         <div>
-          <span
-            className={`inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full leading-tight ${labelColor(bundle.label)}`}
-          >
-            {bundle.label}
-          </span>
+          <span className={`inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full leading-tight ${labelColor(bundle.label)}`}>
+  {bundle.label}
+</span>
 
           <div className="mt-1 text-base font-bold leading-tight">
             {bundle.data}
