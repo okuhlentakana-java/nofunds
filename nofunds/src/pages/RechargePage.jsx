@@ -80,6 +80,7 @@ export default function RechargePage() {
         isOpen={showPaymentModal}
         onClose={handlePaymentClose}
         item={rechargeItem}
+        type="airtime"
         onSuccess={handlePaymentSuccess}
       />
     </div>

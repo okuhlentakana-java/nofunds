@@ -9,25 +9,25 @@ const services = [
     name: "Sasai",
     icon: <CiStar />,
     description: "All-in-one super app for chat, pay, stream and connect.",
-    route: "/services/sasai",
+    route: "/services",
   },
   {
     name: "EcoCash Spache Fono",
     icon: <LiaMoneyBillSolid />,
     description: "Mobile money for payments, transfers, and financial services.",
-    route: "/services/ecocash",
+    route: "/services",
   },
   {
     name: "EcoSure Rebolokehile",
     icon: <LuShield />,
     description: "Affordable mobile insurance for you and your family.",
-    route: "/services/ecosure",
+    route: "/services",
   },
   {
     name: "Next Best Offer",
     icon: <CiStar />,
     description: "Personalised bundle recommendations based on your usage.",
-    route: "/services/nbo",
+    route: "/services",
   },
 ];
 

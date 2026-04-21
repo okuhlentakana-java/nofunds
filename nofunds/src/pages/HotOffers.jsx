@@ -230,6 +230,8 @@ export default function HotOffers() {
         isOpen={!!paymentBundle}
         onClose={() => setPaymentBundle(null)}
         item={paymentBundle}
+        type="bundle"
+        bundleCode={paymentBundle.code}
         onSuccess={() => setPaymentBundle(null)}
       />
     </div>

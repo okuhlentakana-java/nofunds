@@ -41,7 +41,7 @@ const labelColor = (label) => {
 };
 
 export default function BundlesPage() {
-  const { bundles, loading, error } = useBundles();
+  const { bundles, loading, error } = useBundles({ network_operator_country: "LS" });
   const [activeMain, setActiveMain] = useState("all");
   const [activeSub, setActiveSub] = useState("daily");
   const [selectedBundle, setSelected] = useState(null);
@@ -199,6 +199,8 @@ export default function BundlesPage() {
           isOpen={showModal}
           onClose={() => { setShowModal(false); setSelected(null); }}
           item={paymentItem}
+          type="bundle"
+          bundleCode={selectedBundle.code}
           onSuccess={() => { setShowModal(false); setSelected(null); }}
         />
       )}

@@ -24,7 +24,7 @@ function pickSix(bundles) {
 
 export default function Bundles() {
   const navigate = useNavigate();
-  const { bundles, loading, error } = useBundles();
+  const { bundles, loading, error } = useBundles({ network_operator_country: "LS" });
   const [selectedBundle, setSelected] = useState(null);
   const [showModal, setShowModal]     = useState(false);
 

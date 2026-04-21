@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BACKEND_URL } from "../api";
 
 const SendIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -58,18 +59,37 @@ export default function AdvertPage() {
     setErrors((er) => ({ ...er, [field]: undefined }));
   };
 
-  const handleSubmit = () => {
-    const e = validate();
-    if (Object.keys(e).length) {
-      setErrors(e);
-      return;
-    }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-    }, 900);
-  };
+const handleSubmit = async () => {
+  const e = validate();
+  if (Object.keys(e).length) {
+    setErrors(e);
+    return;
+  }
+  setLoading(true);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/adverts/enquiry`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      body: JSON.stringify({
+        fullName:    form.fullName,
+        companyName: form.companyName,
+        email:       form.email,
+        phone:       form.phone,
+        campaign:    form.campaign,
+      }),
+    });
+    if (!res.ok) throw new Error("Server error");
+    setSubmitted(true);
+  // eslint-disable-next-line no-unused-vars
+  } catch (err) {
+    setErrors({ submit: "Failed to submit. Please try again." });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDone = () => {
     setSubmitted(false);
@@ -189,7 +209,9 @@ export default function AdvertPage() {
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y"
                   />
                 </div>
-
+                {errors.submit && (
+              <p className="text-red-500 text-sm text-center">{errors.submit}</p>
+            )}
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
@@ -220,6 +242,7 @@ export default function AdvertPage() {
             <p className="text-gray-500 max-w-xs mb-6">
               Our team will contact you within 24 hours to discuss your advertising needs.
             </p>
+            
             <button
               onClick={handleDone}
               className="bg-gray-800 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-900 transition"

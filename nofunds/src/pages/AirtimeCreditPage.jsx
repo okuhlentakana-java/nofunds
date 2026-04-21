@@ -1,54 +1,59 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowRight, FaSpinner, FaCheck } from "react-icons/fa";
+import { FaArrowRight, FaSpinner, FaCheck, FaExclamationTriangle } from "react-icons/fa";
 import { LuHandCoins } from "react-icons/lu";
 import CreditTabs from "../components/credit/CreditTabs";
 import OptionCard from "../components/credit/OptionCard";
 import ConfirmScreen from "../components/credit/ConfirmScreen";
 import SuccessScreen from "../components/credit/SuccessScreen";
+import { ENDPOINTS } from "../api";
 
-const creditOptions = {
-  airtime: [
-    { id: 1, type: "airtime", name: "M5 Airtime", description: "Get M5 emergency airtime instantly", validity: "Until used", amount: "M5.00", serviceFee: "M0.50", totalRepayment: "M5.50" },
-    { id: 2, type: "airtime", name: "M10 Airtime", description: "Get M10 emergency airtime instantly", validity: "Until used", amount: "M10.00", serviceFee: "M1.00", totalRepayment: "M11.00" },
-    { id: 3, type: "airtime", name: "M20 Airtime", description: "Get M20 emergency airtime instantly", validity: "Until used", amount: "M20.00", serviceFee: "M2.00", totalRepayment: "M22.00" },
-  ],
-  data: [
-    { id: 4, type: "data", name: "50MB Data", description: "Get 50MB emergency data for 24 hours", validity: "24 hours", amount: "50MB", serviceFee: "M0.50", totalRepayment: "M3.50" },
-    { id: 5, type: "data", name: "100MB Data", description: "Get 100MB emergency data for 24 hours", validity: "24 hours", amount: "100MB", serviceFee: "M1.00", totalRepayment: "M6.00" },
-    { id: 6, type: "data", name: "200MB Data", description: "Get 200MB emergency data for 24 hours", validity: "24 hours", amount: "200MB", serviceFee: "M2.00", totalRepayment: "M12.00" },
-  ],
-  voice: [
-    { id: 7, type: "voice", name: "10 Minutes", description: "Get 10 minutes emergency voice", validity: "24 hours", amount: "10min", serviceFee: "M0.50", totalRepayment: "M2.50" },
-    { id: 8, type: "voice", name: "20 Minutes", description: "Get 20 minutes emergency voice", validity: "24 hours", amount: "20min", serviceFee: "M1.00", totalRepayment: "M5.00" },
-    { id: 9, type: "voice", name: "50 Minutes", description: "Get 50 minutes emergency voice", validity: "24 hours", amount: "50min", serviceFee: "M2.50", totalRepayment: "M12.50" },
-  ],
-  sms: [
-    { id: 10, type: "sms", name: "50 SMS", description: "Get 50 emergency SMS", validity: "24 hours", amount: "50 SMS", serviceFee: "M0.50", totalRepayment: "M2.00" },
-    { id: 11, type: "sms", name: "100 SMS", description: "Get 100 emergency SMS", validity: "24 hours", amount: "100 SMS", serviceFee: "M1.00", totalRepayment: "M4.00" },
-    { id: 12, type: "sms", name: "200 SMS", description: "Get 200 emergency SMS", validity: "24 hours", amount: "200 SMS", serviceFee: "M2.00", totalRepayment: "M8.00" },
-  ],
-};
+const CURRENCY = "LSL";
 
-function IntroScreen({ onCheckEligibility }) {
+// ── Step 1: Phone input + intro ───────────────────────────────────────────────
+function IntroScreen({ phone, onPhoneChange, onCheckEligibility, loading, error }) {
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-2xl p-8 shadow-sm text-center">
         <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <LuHandCoins className="w-8 h-8 text-blue-700" />
-            </div>
+          <LuHandCoins className="w-8 h-8 text-blue-700" />
         </div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">Airtime Credit Service</h2>
         <p className="text-sm text-gray-500 mb-6 leading-relaxed">
           Borrow airtime, data, voice minutes, or SMS when you run out.
-          We'll check your eligibility based on your account activity.
+          Enter your phone number to check eligibility.
         </p>
+
+        <div className="text-left mb-4">
+          <label className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => onPhoneChange(e.target.value)}
+            placeholder="+266 5000 0000"
+            className={`w-full px-4 py-3 rounded-xl border ${
+              error ? "border-red-400" : "border-gray-200"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm`}
+          />
+          {error && (
+            <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+              <FaExclamationTriangle className="shrink-0" /> {error}
+            </p>
+          )}
+        </div>
+
         <button
           onClick={onCheckEligibility}
-          className="w-full bg-gradient-to-r from-blue-900 to-blue-500 text-white py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition"
+          disabled={loading}
+          className={`w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition text-white ${
+            loading
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-gradient-to-r from-blue-900 to-blue-500 hover:opacity-90"
+          }`}
         >
-          Check My Eligibility <FaArrowRight />
+          {loading ? <FaSpinner className="animate-spin" /> : <><FaArrowRight /> Check My Eligibility</>}
         </button>
       </div>
 
@@ -63,55 +68,159 @@ function IntroScreen({ onCheckEligibility }) {
   );
 }
 
-function CheckingScreen() {
+// ── Checking spinner ──────────────────────────────────────────────────────────
+function CheckingScreen({ message = "Analysing your account activity..." }) {
   return (
     <div className="text-center py-16 space-y-4">
       <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
         <FaSpinner className="text-blue-600 text-3xl animate-spin" />
       </div>
       <h2 className="text-xl font-bold text-gray-800">Checking Eligibility</h2>
-      <p className="text-gray-400 text-sm">Analysing your account activity...</p>
+      <p className="text-gray-400 text-sm">{message}</p>
     </div>
   );
 }
 
-function QualifyScreen({ creditScore }) {
+// ── Not eligible ──────────────────────────────────────────────────────────────
+function NotEligibleScreen({ onBack }) {
+  return (
+    <div className="text-center py-16 space-y-4 px-4">
+      <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+        <FaExclamationTriangle className="text-red-500 text-3xl" />
+      </div>
+      <h2 className="text-xl font-bold text-gray-800">Not Eligible</h2>
+      <p className="text-gray-500 text-sm max-w-xs mx-auto">
+        Unfortunately your account doesn't qualify for airtime credit at this time.
+        Keep recharging regularly to improve your eligibility.
+      </p>
+      <button
+        onClick={onBack}
+        className="mt-4 bg-gray-800 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-900 transition"
+      >
+        Go Back
+      </button>
+    </div>
+  );
+}
+
+// ── Qualify flash ─────────────────────────────────────────────────────────────
+function QualifyScreen() {
   return (
     <div className="text-center py-16 space-y-4">
       <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
         <FaCheck className="text-green-600 text-3xl" />
       </div>
       <h2 className="text-xl font-bold text-gray-800">You Qualify!</h2>
-      <p className="text-gray-500 text-sm">Credit score: {creditScore}/100</p>
       <p className="text-xs text-gray-400">Loading your available options...</p>
     </div>
   );
 }
 
-function CreditScoreCard({ creditScore }) {
+// ── Credit score pill ─────────────────────────────────────────────────────────
+function CreditScoreCard({ phone }) {
   return (
     <div className="flex items-center justify-between px-1">
       <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Available Credit</p>
-      <span className="text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">
-        Score: {creditScore}/100
+      <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-3 py-1 rounded-full truncate max-w-[160px]">
+        {phone}
       </span>
     </div>
   );
 }
 
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function AirtimeCreditPage() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [creditScore] = useState(79);
-  const [activeTab, setActiveTab] = useState("all");
 
-  const handleCheckEligibility = () => {
+  const [step, setStep]                   = useState(1);   // 1=intro 2=checking 3=qualify 4=options 5=confirm 6=submitting 7=success 8=notEligible
+  const [phone, setPhone]                 = useState("");
+  const [phoneError, setPhoneError]       = useState("");
+  const [apiError, setApiError]           = useState("");
+  const [creditOptions, setCreditOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [activeTab, setActiveTab]         = useState("all");
+
+  // ── 1. Check eligibility then fetch options ────────────────────────────────
+  const handleCheckEligibility = async () => {
+    const cleaned = phone.trim();
+    if (!cleaned) {
+      setPhoneError("Please enter your phone number.");
+      return;
+    }
+    setPhoneError("");
+    setApiError("");
     setStep(2);
-    setTimeout(() => {
+
+    try {
+      // Step A — eligibility
+      const eligRes = await fetch(ENDPOINTS.creditEligibility, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_number: cleaned, currency: CURRENCY }),
+      });
+      const eligData = await eligRes.json();
+
+      // Treat any non-success status or explicit ineligible as not eligible
+      const eligible =
+        eligRes.ok &&
+        eligData?.status !== "error" &&
+        eligData?.data?.eligible !== false;
+
+      if (!eligible) {
+        setStep(8);
+        return;
+      }
+
+      // Step B — fetch available options
+      const optRes = await fetch(ENDPOINTS.creditOptions, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_number: cleaned, currency: CURRENCY }),
+      });
+      const optData = await optRes.json();
+      const options = Array.isArray(optData?.data) ? optData.data : [];
+
+      setCreditOptions(options);
+
+      // Flash the qualify screen then move to options
       setStep(3);
       setTimeout(() => setStep(4), 1500);
-    }, 2000);
+
+    } catch (err) {
+      setApiError("Could not reach the server. Please try again.");
+      setStep(1);
+    }
+  };
+
+  // ── 2. Submit the credit request ───────────────────────────────────────────
+  const handleConfirmBorrow = async () => {
+    if (!selectedOption) return;
+    setStep(6);
+
+    try {
+      const res = await fetch(ENDPOINTS.airtimeCredit, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone_number: phone.trim(),
+          reference:    `CREDIT-${Date.now()}`,
+          currency:     CURRENCY,
+          amount:       selectedOption.amount ?? selectedOption.price,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error?.description || "Credit request failed.");
+      }
+
+      setStep(7);
+      setTimeout(() => navigate("/"), 3500);
+
+    } catch (err) {
+      setApiError(err.message || "Something went wrong. Please try again.");
+      setStep(5);   // send back to confirm so user sees the error
+    }
   };
 
   const handleSelectOption = (option) => {
@@ -119,43 +228,85 @@ export default function AirtimeCreditPage() {
     setStep(5);
   };
 
-  const handleConfirmBorrow = () => {
-    setStep(6);
-    setTimeout(() => navigate("/"), 3500);
-  };
-
   const handleBack = () => {
-    setStep(4);
     setSelectedOption(null);
+    setApiError("");
+    setStep(4);
   };
 
+  // ── Tab filtering — falls back to full list if API returns flat array ───────
   const getFilteredOptions = () => {
-    if (activeTab === "all") return Object.values(creditOptions).flat();
-    return creditOptions[activeTab] || [];
+    if (!creditOptions.length) return [];
+    if (activeTab === "all") return creditOptions;
+    return creditOptions.filter(
+      (o) => (o.type ?? o.category ?? "").toLowerCase() === activeTab
+    );
   };
 
   return (
     <div className="px-4 sm:px-6 pt-6 pb-10 max-w-2xl mx-auto">
-      {step === 1 && <IntroScreen onCheckEligibility={handleCheckEligibility} />}
-      {step === 2 && <CheckingScreen />}
-      {step === 3 && <QualifyScreen creditScore={creditScore} />}
-      {step === 4 && (
-        <div className="space-y-5">
-          <CreditScoreCard creditScore={creditScore} />
-          <CreditTabs activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex flex-col gap-4">
-            {getFilteredOptions().map((option) => (
-              <OptionCard key={option.id} option={option} onSelect={handleSelectOption} />
-            ))}
-          </div>
+
+      {/* Global API error banner (shown on step 1 after a failed attempt) */}
+      {apiError && step === 1 && (
+        <div className="mb-4 bg-red-50 border border-red-200 rounded-xl p-3 flex gap-2 text-xs text-red-700">
+          <FaExclamationTriangle className="shrink-0 mt-0.5" /> {apiError}
         </div>
       )}
-      {step === 5 && (
-        <ConfirmScreen selectedOption={selectedOption} onConfirm={handleConfirmBorrow} onBack={handleBack} />
+
+      {step === 1 && (
+        <IntroScreen
+          phone={phone}
+          onPhoneChange={setPhone}
+          onCheckEligibility={handleCheckEligibility}
+          error={phoneError}
+        />
       )}
-      {step === 6 && (
+
+      {step === 2 && <CheckingScreen />}
+
+      {step === 3 && <QualifyScreen />}
+
+      {step === 4 && (
+        <div className="space-y-5">
+          <CreditScoreCard phone={phone} />
+          <CreditTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+          {getFilteredOptions().length === 0 ? (
+            <p className="text-center text-sm text-gray-400 py-8">
+              No options available for this category.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {getFilteredOptions().map((option, i) => (
+                <OptionCard key={option.id ?? i} option={option} onSelect={handleSelectOption} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {step === 5 && (
+        <>
+          {apiError && (
+            <div className="mb-4 bg-red-50 border border-red-200 rounded-xl p-3 flex gap-2 text-xs text-red-700">
+              <FaExclamationTriangle className="shrink-0 mt-0.5" /> {apiError}
+            </div>
+          )}
+          <ConfirmScreen
+            selectedOption={selectedOption}
+            onConfirm={handleConfirmBorrow}
+            onBack={handleBack}
+          />
+        </>
+      )}
+
+      {step === 6 && <CheckingScreen message="Processing your credit request..." />}
+
+      {step === 7 && (
         <SuccessScreen selectedOption={selectedOption} onDone={() => navigate("/")} />
       )}
+
+      {step === 8 && <NotEligibleScreen onBack={() => setStep(1)} />}
     </div>
   );
 }

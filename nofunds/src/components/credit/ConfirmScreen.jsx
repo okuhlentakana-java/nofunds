@@ -1,33 +1,34 @@
 import { useState, useRef, useEffect } from "react";
+import { ENDPOINTS, apiFetch } from "../../api";
 
-export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
-  const [step, setStep] = useState("confirm"); // "confirm" | "otp"
-  const [otp, setOtp] = useState(["", "", "", ""]);
-  const [otpError, setOtpError] = useState("");
+export default function ConfirmScreen({ selectedOption, phoneNumber, onConfirm, onBack }) {
+  const [step,        setStep]        = useState("confirm");
+  const [otp,         setOtp]         = useState(["", "", "", ""]);
+  const [otpError,    setOtpError]    = useState("");
   const [resendTimer, setResendTimer] = useState(30);
-  const [verifying, setVerifying] = useState(false);
+  const [verifying,   setVerifying]   = useState(false);
+  const [sending,     setSending]     = useState(false);   // OTP send in-flight
+  const [sendError,   setSendError]   = useState("");      // OTP send failure
+  const [otpId,       setOtpId]       = useState(null);    // id from POST /otp response
   const inputsRef = useRef([]);
 
   // Countdown timer for resend
   useEffect(() => {
-    if (step !== "otp") return;
-    if (resendTimer <= 0) return;
+    if (step !== "otp" || resendTimer <= 0) return;
     const t = setTimeout(() => setResendTimer((s) => s - 1), 1000);
     return () => clearTimeout(t);
   }, [resendTimer, step]);
 
   if (!selectedOption) return null;
 
-  // ── OTP input handlers ──────────────────────────────────────
+  // ── OTP input handlers ───────────────────────────────────────────────────
   const handleOtpChange = (index, value) => {
-    if (!/^\d?$/.test(value)) return; // digits only
+    if (!/^\d?$/.test(value)) return;
     const next = [...otp];
     next[index] = value;
     setOtp(next);
     setOtpError("");
-    if (value && index < 3) {
-      inputsRef.current[index + 1]?.focus();
-    }
+    if (value && index < 3) inputsRef.current[index + 1]?.focus();
   };
 
   const handleOtpKeyDown = (index, e) => {
@@ -45,28 +46,62 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
     e.preventDefault();
   };
 
-  const handleVerify = () => {
+  // ── Send OTP ─────────────────────────────────────────────────────────────
+  const sendOtp = async () => {
+    setSending(true);
+    setSendError("");
+    try {
+      const res = await apiFetch(ENDPOINTS.otp, {
+        method: "POST",
+        body: JSON.stringify({ phone_number: phoneNumber }),
+      });
+      // res.data.id is used during verification to identify the OTP session
+      setOtpId(res?.data?.id ?? null);
+      setStep("otp");
+      setResendTimer(30);
+      setOtp(["", "", "", ""]);
+      setOtpError("");
+      setTimeout(() => inputsRef.current[0]?.focus(), 100);
+    } catch (err) {
+      setSendError(err.message || "Failed to send OTP. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // ── Resend OTP ───────────────────────────────────────────────────────────
+  const handleResend = async () => {
+    setOtp(["", "", "", ""]);
+    setOtpError("");
+    await sendOtp();
+  };
+
+  // ── Verify OTP ───────────────────────────────────────────────────────────
+  const handleVerify = async () => {
     const code = otp.join("");
     if (code.length < 4) {
       setOtpError("Please enter the 4-digit code.");
       return;
     }
     setVerifying(true);
-    // Simulate verify — replace with real API call
-    setTimeout(() => {
-      setVerifying(false);
-      onConfirm(); // proceed to success
-    }, 900);
-  };
-
-  const handleResend = () => {
-    setOtp(["", "", "", ""]);
     setOtpError("");
-    setResendTimer(30);
-    inputsRef.current[0]?.focus();
+    try {
+      await apiFetch(ENDPOINTS.otpVerify, {
+        method: "POST",
+        body: JSON.stringify({
+          phone_number: phoneNumber,
+          otp:          code,
+        }),
+      });
+      onConfirm(); // OTP verified — proceed to success
+    } catch (err) {
+      setOtpError(err.message || "Invalid code. Please try again.");
+    } finally {
+      setVerifying(false);
+    }
   };
 
-  // ── STEP: Confirm ───────────────────────────────────────────
+  // ── STEP: Confirm ────────────────────────────────────────────────────────
   if (step === "confirm") {
     return (
       <div className="space-y-4">
@@ -79,10 +114,10 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
 
         {/* Detail rows */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <Row label="Credit Amount" value={selectedOption.amount} />
-          <Row label="Service Fee" value={`${selectedOption.serviceFee} service fee`} />
-          <Row label="Total Repayment" value={`${selectedOption.totalRepayment} deducted on next recharge`} bold />
-          <Row label="Validity" value={selectedOption.validity} last />
+          <Row label="Credit Amount"    value={selectedOption.amount} />
+          <Row label="Service Fee"      value={`${selectedOption.serviceFee} service fee`} />
+          <Row label="Total Repayment"  value={`${selectedOption.totalRepayment} deducted on next recharge`} bold />
+          <Row label="Validity"         value={selectedOption.validity} last />
         </div>
 
         {/* Warning */}
@@ -93,12 +128,24 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
           </p>
         </div>
 
-        {/* Confirm button → goes to OTP step */}
+        {/* Send error */}
+        {sendError && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+            <p className="text-sm text-red-600 text-center">{sendError}</p>
+          </div>
+        )}
+
+        {/* Confirm → triggers OTP send */}
         <button
-          onClick={() => { setStep("otp"); setResendTimer(30); }}
-          className="w-full bg-gradient-to-r from-blue-700 to-blue-500 text-white py-4 rounded-2xl font-bold text-base hover:opacity-90 transition"
+          onClick={sendOtp}
+          disabled={sending}
+          className={`w-full py-4 rounded-2xl font-bold text-base text-white transition ${
+            sending
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-gradient-to-r from-blue-700 to-blue-500 hover:opacity-90"
+          }`}
         >
-          Confirm Borrow
+          {sending ? "Sending Code…" : "Confirm Borrow"}
         </button>
 
         <button
@@ -111,22 +158,22 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
     );
   }
 
-  // ── STEP: OTP ───────────────────────────────────────────────
+  // ── STEP: OTP ────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center space-y-1 pt-2">
-        {/* Shield icon */}
         <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8"
+            strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             <polyline points="9 12 11 14 15 10" />
           </svg>
         </div>
         <h3 className="text-lg font-bold text-gray-800">Verify It's You</h3>
         <p className="text-sm text-gray-400 leading-relaxed">
-          We sent a 4-digit code to your registered number.<br />
-          Enter it below to complete your borrow request.
+          We sent a 4-digit code to{" "}
+          <span className="font-semibold text-gray-600">{phoneNumber ?? "your registered number"}</span>.
+          <br />Enter it below to complete your borrow request.
         </p>
       </div>
 
@@ -150,14 +197,13 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
             onChange={(e) => handleOtpChange(i, e.target.value)}
             onKeyDown={(e) => handleOtpKeyDown(i, e)}
             className={`w-14 h-14 text-center text-2xl font-black rounded-2xl border-2 outline-none transition-all
-              ${digit ? "border-blue-500 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-800"}
-              ${otpError ? "border-red-400 bg-red-50" : ""}
+              ${digit         ? "border-blue-500 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-800"}
+              ${otpError      ? "border-red-400 bg-red-50" : ""}
               focus:border-blue-500 focus:bg-blue-50`}
           />
         ))}
       </div>
 
-      {/* Error */}
       {otpError && (
         <p className="text-center text-sm text-red-500">{otpError}</p>
       )}
@@ -166,7 +212,8 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
       <div className="text-center">
         {resendTimer > 0 ? (
           <p className="text-xs text-gray-400">
-            Resend code in <span className="font-semibold text-gray-600">{resendTimer}s</span>
+            Resend code in{" "}
+            <span className="font-semibold text-gray-600">{resendTimer}s</span>
           </p>
         ) : (
           <button
@@ -178,7 +225,7 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
         )}
       </div>
 
-      {/* Verify button */}
+      {/* Verify */}
       <button
         onClick={handleVerify}
         disabled={verifying || otp.join("").length < 4}
@@ -191,7 +238,6 @@ export default function ConfirmScreen({ selectedOption, onConfirm, onBack }) {
         {verifying ? "Verifying…" : "Verify & Confirm"}
       </button>
 
-      {/* Back to confirm */}
       <button
         onClick={() => { setStep("confirm"); setOtp(["", "", "", ""]); setOtpError(""); }}
         className="w-full text-center text-sm text-gray-400 hover:text-gray-600 transition py-1"
