@@ -1,8 +1,8 @@
 // src/api/index.js
 
 // ─── Base URLs ────────────────────────────────────────────────────────────────
-export const BASE_URL    = "http://nofunds.jamesdube.com";
-export const BACKEND_URL = "https://uncurbable-brianne-cruelly.ngrok-free.dev";
+export const BASE_URL = import.meta.env.VITE_BASE_URL;
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // ─── Endpoints ────────────────────────────────────────────────────────────────
 export const ENDPOINTS = {
