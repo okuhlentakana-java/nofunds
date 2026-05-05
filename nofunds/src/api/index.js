@@ -3,6 +3,8 @@
 // ─── Base URLs ────────────────────────────────────────────────────────────────
 export const BASE_URL = import.meta.env.VITE_BASE_URL;
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+export const AD_BASE_URL = import.meta.env.VITE_AD_BASE_URL;
+export const AD_API_KEY = import.meta.env.VITE_AD_API_KEY;
 
 // ─── Endpoints ────────────────────────────────────────────────────────────────
 export const ENDPOINTS = {

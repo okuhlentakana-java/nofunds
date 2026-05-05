@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+[data-tangazo-zone="slim_strip"] img {
+  width: 100% !important;
+  height: 50px !important;
+  display: block !important;
+  object-fit: cover !important;
+}
