@@ -18,7 +18,7 @@ export default function Actions() {
         <Link
           key={action.name}
           to={action.to}
-          className="relative flex flex-col items-center justify-center p-3 rounded-xl bg-gradient-to-br from-indigo-900 to-blue-500 text-white cursor-pointer hover:scale-105 transition overflow-hidden"
+          className="relative flex flex-col items-center justify-center py-2 px-3 rounded-xl bg-gradient-to-br from-indigo-900 to-blue-500 text-white cursor-pointer hover:scale-105 transition overflow-hidden"
         >
           {/* Wave pattern overlay */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -40,8 +40,8 @@ export default function Actions() {
           </svg>
 
           <div className="relative z-10 flex flex-col items-center">
-            <div className="text-xl">{action.icon}</div>
-            <p className="text-xs mt-1.5 font-medium">{action.name}</p>
+            <div className="text-lg">{action.icon}</div>
+            <p className="text-xs mt-1 font-medium">{action.name}</p>
           </div>
         </Link>
       ))}

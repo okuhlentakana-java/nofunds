@@ -1,8 +1,29 @@
 @import "tailwindcss";
 
+/* ── primary_banner ── */
+[data-tangazo-zone="primary_banner"] img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 220px !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 1rem !important;
+}
+
+/* ── secondary_banner ── */
+[data-tangazo-zone="secondary_banner"] img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 90px !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 1rem !important;
+}
+
+/* ── slim_strip ── */
 [data-tangazo-zone="slim_strip"] img {
   width: 100% !important;
   height: 50px !important;
-  display: block !important;
   object-fit: cover !important;
+  display: block !important;
 }

@@ -40,6 +40,7 @@ export default function HotOffers() {
   const [paymentBundle, setPaymentBundle] = useState(null);
 
   useTangazoAd("primary_banner");
+  const { isEmpty } = useTangazoAd("primary_banner");
 
   const { bundles: dataBundles = [],   loading: loadingData   } = useBundlesByCategory("data");
   const { bundles: nightBundles = [],  loading: loadingNight  } = useBundlesByCategory("night");
@@ -74,13 +75,21 @@ export default function HotOffers() {
     <div className="bg-gray-100 min-h-screen font-sans">
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {/* ── Hero Banner — Tangazo primary_banner ────────────────────────── */}
-        <div className="rounded-2xl overflow-hidden mb-6">
+         {/* Hero Banner — max width + height constrained */}
+      <div className="rounded-2xl overflow-hidden mb-6 max-w-screen-sm mx-auto">
+        {isEmpty ? (
+          <img
+            src="/VisitLesotho_primary_1080x720 2.jpg"
+            alt="Visit Lesotho"
+            className="w-full h-auto block"
+          />
+        ) : (
           <div
             data-tangazo-zone="primary_banner"
             style={{ display: "block", width: "100%", minHeight: "180px" }}
           />
-        </div>
+        )}
+      </div>
 
         {/* ── Best Value Deals ─────────────────────────────────────────────── */}
         <SectionLabel>Best Value Deals</SectionLabel>

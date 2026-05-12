@@ -13,6 +13,7 @@ const amounts = [
 
 export default function AmountSelection({ selectedAmount, customAmount, onAmountSelect, onCustomAmountChange }) {
   useTangazoAd("primary_banner");
+  const { isEmpty } = useTangazoAd("primary_banner");
 
   const handleCustomAmountChange = (e) => {
     const value = e.target.value;
@@ -24,12 +25,20 @@ export default function AmountSelection({ selectedAmount, customAmount, onAmount
   return (
     <div className="space-y-6">
 
-      {/* Hero Banner */}
-      <div className="rounded-2xl overflow-hidden mb-6">
-        <div
-          data-tangazo-zone="primary_banner"
-          style={{ display: "block", width: "100%", minHeight: "180px" }}
-        />
+      {/* Hero Banner — max width + height constrained */}
+      <div className="rounded-2xl overflow-hidden mb-6 max-w-screen-sm mx-auto">
+        {isEmpty ? (
+          <img
+            src="/VisitLesotho_primary_1080x720 2.jpg"
+            alt="Visit Lesotho"
+            className="w-full h-auto block"
+          />
+        ) : (
+          <div
+            data-tangazo-zone="primary_banner"
+            style={{ display: "block", width: "100%", minHeight: "180px" }}
+          />
+        )}
       </div>
 
       {/* Amount Selection */}
