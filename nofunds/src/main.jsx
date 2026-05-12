@@ -21,12 +21,13 @@ import UsageTips from "./pages/UsageTips";
 import Emergency from "./pages/EmergencyPage";
 import AboutNoFunds from "./pages/AboutNoFundsPage";
 import HotOffers from "./pages/HotOffers";
+import ErrorPage from './pages/ErrorPage';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    errorElement: <div>Page Not Found</div>,
+    errorElement: <ErrorPage />, // Fallback UI for unmatched routes
     children: [
       {
        path: "", 
