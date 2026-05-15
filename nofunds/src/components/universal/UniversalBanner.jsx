@@ -23,28 +23,26 @@ export default function UniversalBanner() {
   }, []);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40">
-      <div className="mx-4 mb-4">
-        <div className="rounded-xl overflow-hidden shadow-md bg-gray-100 max-w-screen-sm mx-auto">
-          {isEmpty ? (
-            <img
-              src="/VisitLesotho_slim_320x50 2.jpg"
-              alt="Visit Lesotho"
-              className="w-full block"
-              style={{ height: `${AD_HEIGHT}px`, objectFit: "cover" }}
-            />
-          ) : (
-            <div
-              data-tangazo-zone={ZONE}
-              style={{ display: "block", width: "100%", minHeight: `${AD_HEIGHT}px` }}
-            />
-          )}
-          <div className="h-0.5 bg-gray-300">
-            <div
-              className="h-0.5 bg-gray-500 transition-all duration-100 ease-linear"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+    <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-center pb-4 px-4">
+      <div className="w-full max-w-2xl rounded-xl overflow-hidden shadow-md bg-gray-100">
+        {isEmpty ? (
+          <img
+            src="/VisitLesotho_slim_320x50 2.jpg"
+            alt="Visit Lesotho"
+            className="w-full block"
+            style={{ height: `${AD_HEIGHT}px`, objectFit: "cover", objectPosition: "center center" }}
+          />
+        ) : (
+          <div
+            data-tangazo-zone={ZONE}
+            style={{ display: "block", width: "100%", minHeight: `${AD_HEIGHT}px` }}
+          />
+        )}
+        <div className="h-0.5 bg-gray-300">
+          <div
+            className="h-0.5 bg-gray-500 transition-all duration-100 ease-linear"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
     </div>

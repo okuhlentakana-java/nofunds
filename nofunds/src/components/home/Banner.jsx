@@ -62,8 +62,8 @@ export default function Banner() {
         </div>
         <div>
           <h2 className="font-semibold text-base">You're out of data</h2>
-          <p className="text-xs opacity-90">
-            Recharge, buy a bundle, or borrow .
+          <p className="text-[10px] opacity-90">
+            Recharge, buy a bundle, or borrow to stay connected.
           </p>
         </div>
       </div>

@@ -11,11 +11,20 @@ export default function SponsoredBanner() {
             src="/VisitLesotho_secondary_728x90 2.jpg"
             alt="Visit Lesotho"
             className="w-full h-auto block"
+            style={{
+              aspectRatio: "728 / 90",
+              objectFit: "contain",
+            }}
           />
         ) : (
           <div
             data-tangazo-zone="secondary_banner"
-            style={{ display: "block", width: "100%", minHeight: "90px" }}
+            style={{
+              display: "block",
+              width: "100%",
+              aspectRatio: "728 / 90",
+              minHeight: "90px",
+            }}
           />
         )}
       </div>

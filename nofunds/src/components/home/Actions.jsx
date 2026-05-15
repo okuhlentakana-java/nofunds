@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { BsPhone } from "react-icons/bs";
 import { CiWifiOn } from "react-icons/ci";
 import { LuHandCoins } from "react-icons/lu";
@@ -12,12 +12,19 @@ const actions = [
 ];
 
 export default function Actions() {
+    const navigateTo = useNavigate();
+  const handleNavigation = (path) => {
+    navigateTo(path);
+  };
+
+
+
   return (
     <div className="grid grid-cols-4 gap-2 px-4 mt-3">
       {actions.map((action) => (
-        <Link
+        <div
+          onClick={() => handleNavigation(action.to)}
           key={action.name}
-          to={action.to}
           className="relative flex flex-col items-center justify-center py-2 px-3 rounded-xl bg-gradient-to-br from-indigo-900 to-blue-500 text-white cursor-pointer hover:scale-105 transition overflow-hidden"
         >
           {/* Wave pattern overlay */}
@@ -43,7 +50,7 @@ export default function Actions() {
             <div className="text-lg">{action.icon}</div>
             <p className="text-xs mt-1 font-medium">{action.name}</p>
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );

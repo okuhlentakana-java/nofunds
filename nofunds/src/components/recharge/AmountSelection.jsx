@@ -12,8 +12,7 @@ const amounts = [
 ];
 
 export default function AmountSelection({ selectedAmount, customAmount, onAmountSelect, onCustomAmountChange }) {
-  useTangazoAd("primary_banner");
-  const { isEmpty } = useTangazoAd("primary_banner");
+  const { isEmpty } = useTangazoAd("primary_banner"); // ← was called twice, removed duplicate
 
   const handleCustomAmountChange = (e) => {
     const value = e.target.value;
@@ -25,7 +24,8 @@ export default function AmountSelection({ selectedAmount, customAmount, onAmount
   return (
     <div className="space-y-6">
 
-      {/* Hero Banner — max width + height constrained */}
+    
+            {/* Hero Banner — max width + height constrained */}
       <div className="rounded-2xl overflow-hidden mb-6 max-w-screen-sm mx-auto">
         {isEmpty ? (
           <img
@@ -43,8 +43,10 @@ export default function AmountSelection({ selectedAmount, customAmount, onAmount
 
       {/* Amount Selection */}
       <div>
-        <h2 className="text-lg font-bold text-gray-800 mb-4">SELECT AMOUNT</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        <h2 className="text-lg font-bold text-gray-800 mb-4" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.05em' }}>
+          SELECT AMOUNT
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {amounts.map((amount) => (
             <button
               key={amount.value}
@@ -55,12 +57,15 @@ export default function AmountSelection({ selectedAmount, customAmount, onAmount
                   : "border-gray-200 bg-white hover:border-blue-300"
               }`}
             >
-              <div className={`font-bold text-lg ${
-                selectedAmount === amount.value ? "text-white" : "text-gray-800"
-              }`}>
+              <div
+                className={`font-bold text-xl ${
+                  selectedAmount === amount.value ? "text-white" : "text-gray-900"
+                }`}
+                style={{ fontFamily: 'Raleway, sans-serif' }}
+              >
                 {amount.label}
               </div>
-              <div className={`text-xs ${
+              <div className={`text-xs mt-0.5 ${
                 selectedAmount === amount.value ? "text-blue-200" : "text-gray-500"
               }`}>
                 {amount.description}
@@ -72,7 +77,10 @@ export default function AmountSelection({ selectedAmount, customAmount, onAmount
 
       {/* Custom Amount */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label
+          className="block text-sm font-semibold text-gray-700 mb-2"
+          style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.05em' }}
+        >
           OR ENTER CUSTOM AMOUNT
         </label>
         <div className="relative">
@@ -85,6 +93,7 @@ export default function AmountSelection({ selectedAmount, customAmount, onAmount
             onChange={handleCustomAmountChange}
             placeholder="0.00"
             className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{ fontFamily: 'Inter, sans-serif' }}
           />
         </div>
       </div>
